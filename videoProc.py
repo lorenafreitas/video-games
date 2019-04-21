@@ -5,29 +5,29 @@ import numpy as np
 import argparse as ap
 import os
 
+def iter_frames(video): 
+    ret, frame = video.read()
+    while ret:
+        yield frame
+        ret, frame = video.read()
+    
 
 def vidMedian(videoFile):
     if os.path.isfile(videoFile):
 
-        cap = cv.VideoCapture(videoFile)
-        length = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
-        width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
-        height =int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+        video = cv.VideoCapture(videoFile)
+        length = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+        width = int(video.get(cv.CAP_PROP_FRAME_WIDTH))
+        height =int(video.get(cv.CAP_PROP_FRAME_HEIGHT))
         myNpArray = np.empty(shape=(height,width,length))
-        thisFrIx = 0 
        
-        while(cap.isOpened()):
-            ret, frame = cap.read()
-            if ret:
-                grey = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-                myNpArray[:,:,thisFrIx] = grey
-                thisFrIx += 1
-            else:
-                break    
+        for thisFrIx, frame in enumerate(iter_frames(video)):
+            grey = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            myNpArray[:,:,thisFrIx] = grey
 
         newImage = np.median(myNpArray, axis=2)
         cv.imwrite("median.jpg", newImage)
-        cap.release()
+        video.release()
         cv.destroyAllWindows()
         print("Done!")
 
