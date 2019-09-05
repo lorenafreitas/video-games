@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import cv2 as cv
+import opencv as cv
 import numpy as np
 import argparse as ap
 import os
